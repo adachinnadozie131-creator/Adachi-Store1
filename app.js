@@ -1,6 +1,76 @@
-let c=JSON.parse(localStorage.adachiCart||'[]');const money=n=>'₦'+n.toLocaleString('en-NG');<div class="pic">${p.image?`<img src="${p.image}" alt="${p.name}
-function render(){let q=(search.value||'').toLowerCase();products.innerHTML=STORE.products.filter(p=>(p.name+p.description).toLowerCase().includes(q)).map(p=>`<article class="product"><div  class="body"><h3>${p.name}</h3><p>${p.description}</p><div class="price">${money(p.price)}</div><button onclick="add(${p.id})">Add to cart</button></div></article>`).join('')}
-function add(id){let x=c.find(i=>i.id===id);x?x.qty++:c.push({id,qty:1});save();cart()};function save(){localStorage.adachiCart=JSON.stringify(c);count.textContent=c.reduce((a,x)=>a+x.qty,0)}
-function cart(){items.innerHTML='';let t=0;c.forEach(i=>{let p=STORE.products.find(x=>x.id===i.id);t+=p.price*i.qty;items.innerHTML+=`<div class="row"><span>${p.name} × ${i.qty}</span><b>${money(p.price*i.qty)}</b></div>`});total.textContent=t.toLocaleString('en-NG');drawer.classList.add('show')};function closeCart(){drawer.classList.remove('show')}
-function checkout(){if(!c.length)return alert('Your cart is empty.');let text='Hello Adachi Store, I want to order:%0A'+c.map(i=>{let p=STORE.products.find(x=>x.id===i.id);return `• ${p.name} x ${i.qty} = ${money(p.price*i.qty)}`}).join('%0A')+`%0A%0ATotal: ₦${total.textContent}%0A%0APlease confirm stock, delivery fee and payment details.`;location.href=`https://wa.me/${STORE.whatsapp}?text=${text}`}
-render();save();
+
+let c=JSON.parse(localStorage.adachiCart||'[]');
+
+const money=n=>'₦'+n.toLocaleString('en-NG');
+
+function render(){
+  let q=(search.value||'').toLowerCase();
+
+  products.innerHTML=STORE.products
+    .filter(p=>(p.name+p.description).toLowerCase().includes(q))
+    .map(p=>`
+      <article class="product">
+        <div class="pic">
+          ${p.image
+            ? `<img src="${p.image}" alt="${p.name}">`
+            : p.emoji}
+        </div>
+        <div class="body">
+          <h3>${p.name}</h3>
+          <p>${p.description}</p>
+          <div class="price">${money(p.price)}</div>
+          <button onclick="add(${p.id})">Add to cart</button>
+        </div>
+      </article>
+    `).join('');
+}
+
+function add(id){
+  let x=c.find(i=>i.id===id);
+  x?x.qty++:c.push({id,qty:1});
+  save();
+  cart();
+}
+
+function save(){
+  localStorage.adachiCart=JSON.stringify(c);
+  count.textContent=c.reduce((a,x)=>a+x.qty,0);
+}
+
+function cart(){
+  items.innerHTML='';
+  let t=0;
+
+  c.forEach(i=>{
+    let p=STORE.products.find(x=>x.id===i.id);
+    t+=p.price*i.qty;
+    items.innerHTML+=`
+      <div class="row">
+        <span>${p.name} × ${i.qty}</span>
+        <b>${money(p.price*i.qty)}</b>
+      </div>`;
+  });
+
+  total.textContent=t.toLocaleString('en-NG');
+  drawer.classList.add('show');
+}
+
+function closeCart(){
+  drawer.classList.remove('show');
+}
+
+function checkout(){
+  if(!c.length)return alert('Your cart is empty.');
+
+  let text='Hello Adachi Store, I want to order:%0A'+
+    c.map(i=>{
+      let p=STORE.products.find(x=>x.id===i.id);
+      return `• ${p.name} x ${i.qty} = ${money(p.price*i.qty)}`;
+    }).join('%0A')+
+    `%0A%0ATotal: ₦${total.textContent}%0A%0APlease confirm stock, delivery fee and payment details.`;
+
+  location.href=`https://wa.me/${STORE.whatsapp}?text=${text}`;
+}
+
+render();
+save();
